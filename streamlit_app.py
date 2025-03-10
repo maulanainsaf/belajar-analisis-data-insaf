@@ -1,22 +1,22 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px 
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Set konfigurasi halaman
 st.set_page_config(
     page_title="Dashboard Analisis Penjualan",
-    page_icon="🚲",
+    page_icon="",
     layout="wide"
 )
+
 # Load datasets
 combined = pd.read_csv("combined_sales.csv")
 
-
 # Sidebar untuk logo dan filter
-st.sidebar.image("profil_insaf.jpg", use_column_width=True)  # Ganti dengan path logo
+st.sidebar.image("profil_insaf.jpg", use_container_width=True)  # Ganti dengan path logo
 st.sidebar.header("Filter")
 selected_year = st.sidebar.selectbox("Pilih Tahun:", ["Semua"] + sorted(combined['year'].unique().tolist()))
-
 
 # Filter berdasarkan tahun jika dipilih
 if selected_year != "Semua":
@@ -47,9 +47,12 @@ st.dataframe(combined[['customer_city', 'year', 'total_y']])
 
 # Visualization: Top 10 Sales by City
 st.subheader("Top 10 Sales by City")
-fig_city = px.bar(top_10_city, x="customer_city", y="total_y", color="year", 
-                  title='Top 10 Total Sales by City')
-st.plotly_chart(fig_city)
+fig_city, ax_city = plt.subplots(figsize=(10, 6))
+sns.barplot(data=top_10_city, x="customer_city", y="total_y", hue="year", ax=ax_city)
+ax_city.set_title('Top 10 Total Sales by City')
+ax_city.set_xlabel('City')
+ax_city.set_ylabel('Total Sales')
+st.pyplot(fig_city)
 
 st.subheader("Sales by State")
 # Filter Pencarian State
@@ -65,6 +68,9 @@ st.dataframe(combined[['customer_state', 'year', 'total_x']])
 
 # Visualization: Top 10 Sales by State
 st.subheader("Top 10 Sales by State")
-fig_state = px.bar(top_10_state, x='customer_state', y='total_x', color="year", 
-                   title='Top 10 Total Sales per State')
-st.plotly_chart(fig_state)
+fig_state, ax_state = plt.subplots(figsize=(10, 6))
+sns.barplot(data=top_10_state, x='customer_state', y='total_x', hue="year", ax=ax_state)
+ax_state.set_title('Top 10 Total Sales per State')
+ax_state.set_xlabel('State')
+ax_state.set_ylabel('Total Sales')
+st.pyplot(fig_state)
